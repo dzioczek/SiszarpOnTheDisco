@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  siszarponthedisco:
+    env_file: .env
+    image: dzioczek/siszarponthedisco:latest
+    build:
+      context: .
+      dockerfile: SiszarpOnTheDisco/Dockerfile
+    tty: true
+    stdin_open: true
+    restart: unless-stopped
+    
+      
+      
