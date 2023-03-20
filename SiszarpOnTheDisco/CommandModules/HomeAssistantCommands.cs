@@ -80,17 +80,17 @@ public class HomeAssistantCommands : ModuleBase<SocketCommandContext>
     [Command("power", RunMode = RunMode.Async)]
     public async Task GetPowerInfo()
     {
-        if (DateTime.Now < _lastPowerCommandTime) return;
-        _lastPowerCommandTime = DateTime.Now.AddMinutes(5);
-
+        // if (DateTime.Now < _lastPowerCommandTime) return;
+        // _lastPowerCommandTime = DateTime.Now.AddMinutes(5);
+        //
         FileInfo file = _homeAssistant.GetPowerChart().Result;
-
+        
         EmbedBuilder embed = new EmbedBuilder
         {
             Title = "Power",
-            Description = _homeAssistant.GetPowerStatus().Result,
+            Description = "Hrum!", // _homeAssistant.GetPowerStatus().Result,
             Color = Color.Orange,
-
+        
             Footer = new EmbedFooterBuilder
             {
                 Text = $"Response time: {DateTimeOffset.Now - Context.Message.Timestamp:s\\.fff}"

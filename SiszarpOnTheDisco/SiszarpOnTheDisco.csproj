@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk;Microsoft.NET.Sdk.Publish">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <StartupObject>SiszarpOnTheDisco.Program</StartupObject>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <None Remove="Discord.Net" />
@@ -19,30 +20,30 @@
         <None Remove="Sprocket.Text.Ascii.Calendar" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Ardalis.SmartEnum" Version="2.1.0" />
-        <PackageReference Include="Ardalis.SmartEnum.EFCore" Version="2.1.0" />
-        <PackageReference Include="Discord.Net" Version="3.3.2" />
-        <PackageReference Include="HtmlAgilityPack" Version="1.11.43" />
+        <PackageReference Include="Ardalis.SmartEnum" Version="7.0.0" />
+        <PackageReference Include="Ardalis.SmartEnum.EFCore" Version="7.0.0" />
+        <PackageReference Include="Discord.Net" Version="3.7.2" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
         <PackageReference Include="LiveChartsCore" Version="2.0.0-beta.101" />
         <PackageReference Include="LiveChartsCore.SkiaSharpView" Version="2.0.0-beta.101" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.4" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.8">
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
         <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.6" />
-        <PackageReference Include="SkiaSharp" Version="2.88.1" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.1" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.3" />
+        <PackageReference Include="SkiaSharp" Version="2.88.3" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
         <PackageReference Include="UnifiApi" Version="1.0.0.17" />
-        <PackageReference Include="Serilog" Version="2.11.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
+        <PackageReference Include="Serilog" Version="2.12.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
         <PackageReference Include="Sprocket.Text.Ascii.Calendar" Version="1.0.0" />
     </ItemGroup>

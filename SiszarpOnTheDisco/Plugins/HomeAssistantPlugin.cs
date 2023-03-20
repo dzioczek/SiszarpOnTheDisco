@@ -84,12 +84,12 @@ public class HomeAssistantPlugin
         StringBuilder sb = new();
 
         sb.AppendLine(entities
-            .First(x => x.entity_id.Contains("outside_temperature", StringComparison.OrdinalIgnoreCase)).StateString);
-        sb.AppendLine(entities.First(x => x.entity_id.Contains("outside_humidity", StringComparison.OrdinalIgnoreCase))
+            .First(x => x.entity_id.Contains("temp_outside_temperature", StringComparison.OrdinalIgnoreCase)).StateString);
+        sb.AppendLine(entities.First(x => x.entity_id.Contains("temp_outside_humidity", StringComparison.OrdinalIgnoreCase))
             .StateString);
 
         HomeAssistantEntity batteryEntity =
-            entities.First(x => x.entity_id.Contains("outside_battery", StringComparison.OrdinalIgnoreCase));
+            entities.First(x => x.entity_id.Contains("temp_outside_battery", StringComparison.OrdinalIgnoreCase));
 
         if (int.Parse(batteryEntity.state) < 30)
             sb.AppendLine(batteryEntity.StateString);
@@ -101,7 +101,7 @@ public class HomeAssistantPlugin
     {
         HomeAssistantEntity[] entities = GetEntities().Result;
         return entities.First(x =>
-            x.entity_id.Contains("light_sensor_illuminance_lux", StringComparison.OrdinalIgnoreCase)).StateString;
+            x.entity_id.Contains("light_sensor_outside_illuminance_lux", StringComparison.OrdinalIgnoreCase)).StateString;
     }
 
     public async Task<string> DryerStatus()
@@ -243,13 +243,13 @@ public class HomeAssistantPlugin
     public async Task<string> SetOfficeBlindShade()
     {
         return await SetBlindPosition(new CoverPositionServiceData()
-            { EntityId = "cover.blind_theoffice", Position = 50 });
+            { EntityId = "cover.blind_office", Position = 50 });
     }
 
     public async Task<string> ChangeOfficeBlindShade(bool more)
     {
         HomeAssistantEntity officeBlind =
-            GetEntities().Result.FirstOrDefault(x => x.entity_id == "cover.blind_theoffice");
+            GetEntities().Result.FirstOrDefault(x => x.entity_id == "cover.blind_office");
 
         // 100 is fully open and 0 is fully closed
         // more shade is less open hence you have to lower number
@@ -270,7 +270,7 @@ public class HomeAssistantPlugin
 
             int newPosition = officeBlind.attributes.current_position + (direction * 10);
             await SetBlindPosition(new CoverPositionServiceData()
-                { EntityId = "cover.blind_theoffice", Position = newPosition });
+                { EntityId = "cover.blind_office", Position = newPosition });
             return $"Ustawiam roletę na {newPosition}";
         }
 
@@ -287,6 +287,7 @@ public class HomeAssistantPlugin
 
             string url = $"{_apiUrl}services/cover/set_cover_position";
             HttpResponseMessage response = await client.PostAsJsonAsync(url, serviceData);
+            _logger.Information(response.StatusCode.ToString());
             return response.StatusCode.ToString();
         }
     }
