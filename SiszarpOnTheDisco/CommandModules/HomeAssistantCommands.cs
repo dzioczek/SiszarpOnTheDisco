@@ -88,7 +88,7 @@ public class HomeAssistantCommands : ModuleBase<SocketCommandContext>
         EmbedBuilder embed = new EmbedBuilder
         {
             Title = "Power",
-            Description = "Hrum!", // _homeAssistant.GetPowerStatus().Result,
+            Description = _homeAssistant.GetPowerStatus().Result,
             Color = Color.Orange,
         
             Footer = new EmbedFooterBuilder

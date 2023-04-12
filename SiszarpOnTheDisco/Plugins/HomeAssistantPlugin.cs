@@ -22,13 +22,13 @@ public class HomeAssistantPlugin
     private readonly string _apiKey;
     private readonly ILogger _logger;
     private readonly JsonSerializerOptions _serializerOptions;
-    
+
     public HomeAssistantPlugin(ILogger logger)
     {
         _logger = logger;
         _apiKey = Environment.GetEnvironmentVariable("HA_API_KEY");
         _apiUrl = Environment.GetEnvironmentVariable("HA_API_BASE_URL");
-        
+
         _serializerOptions = new()
         {
             WriteIndented = true,
@@ -36,7 +36,6 @@ public class HomeAssistantPlugin
             IgnoreReadOnlyProperties = true,
             IncludeFields = true
         };
-
     }
 
     public string GetTemperatures()
@@ -51,7 +50,7 @@ public class HomeAssistantPlugin
         return sb.ToString();
     }
 
-    
+
     public string GetRoomTemperature(string room)
     {
         HomeAssistantEntity[] entities = GetEntities().Result;
@@ -84,8 +83,10 @@ public class HomeAssistantPlugin
         StringBuilder sb = new();
 
         sb.AppendLine(entities
-            .First(x => x.entity_id.Contains("temp_outside_temperature", StringComparison.OrdinalIgnoreCase)).StateString);
-        sb.AppendLine(entities.First(x => x.entity_id.Contains("temp_outside_humidity", StringComparison.OrdinalIgnoreCase))
+            .First(x => x.entity_id.Contains("temp_outside_temperature", StringComparison.OrdinalIgnoreCase))
+            .StateString);
+        sb.AppendLine(entities
+            .First(x => x.entity_id.Contains("temp_outside_humidity", StringComparison.OrdinalIgnoreCase))
             .StateString);
 
         HomeAssistantEntity batteryEntity =
@@ -101,7 +102,8 @@ public class HomeAssistantPlugin
     {
         HomeAssistantEntity[] entities = GetEntities().Result;
         return entities.First(x =>
-            x.entity_id.Contains("light_sensor_outside_illuminance_lux", StringComparison.OrdinalIgnoreCase)).StateString;
+                x.entity_id.Contains("light_sensor_outside_illuminance_lux", StringComparison.OrdinalIgnoreCase))
+            .StateString;
     }
 
     public async Task<string> DryerStatus()
@@ -151,11 +153,11 @@ public class HomeAssistantPlugin
             StringBuilder sb = new();
 
             sb.AppendLine(
-                entities.FirstOrDefault(x => x.entity_id == "sensor.growatt_output_watt_actual")?.StateString);
+                entities.FirstOrDefault(x => x.entity_id == "sensor.growatt_output_kilowatt_actual")?.StateString);
             sb.AppendLine(
                 entities.FirstOrDefault(x => x.entity_id == "sensor.growatt_generated_energy_today")?.StateString);
-            sb.AppendLine(entities.FirstOrDefault(x => x.entity_id == "sensor.monthly_energy")?.StateString);
-            sb.AppendLine(entities.FirstOrDefault(x => x.entity_id == "sensor.yearly_energy")?.StateString);
+            // sb.AppendLine(entities.FirstOrDefault(x => x.entity_id == "sensor.monthly_energy")?.StateString);
+            // sb.AppendLine(entities.FirstOrDefault(x => x.entity_id == "sensor.yearly_energy")?.StateString);
             sb.AppendLine(entities.FirstOrDefault(x => x.entity_id == "sensor.growatt_generated_energy_total")
                 ?.StateString);
 
@@ -226,7 +228,7 @@ public class HomeAssistantPlugin
         HomeAssistantEntity[] entities = GetEntities().Result;
         return entities.Where(x => x.entity_id.Contains("camera.", StringComparison.OrdinalIgnoreCase)).ToList();
     }
-    
+
     public async Task<HomeAssistantEntity[]> GetEntities()
     {
         using HttpClient client = new();
@@ -237,7 +239,7 @@ public class HomeAssistantPlugin
 
         string url = $"{_apiUrl}states";
 
-        return await client.GetFromJsonAsync<HomeAssistantEntity[]>(url, _serializerOptions);    
+        return await client.GetFromJsonAsync<HomeAssistantEntity[]>(url, _serializerOptions);
     }
 
     public async Task<string> SetOfficeBlindShade()
@@ -253,14 +255,14 @@ public class HomeAssistantPlugin
 
         // 100 is fully open and 0 is fully closed
         // more shade is less open hence you have to lower number
-        
+
         if (officeBlind != null)
         {
             int direction = 1;
             switch (more)
             {
                 case true when officeBlind.attributes.current_position <= 0:
-                    return "Bardziej się nie da!"; 
+                    return "Bardziej się nie da!";
                 case true:
                     direction = -1;
                     break;
@@ -305,9 +307,12 @@ public class HomeAssistantPlugin
                 //if (!data.Keys.Contains(entity.last_updated.Hour)) data.Add(entity.last_updated.Hour, 0);
                 //data[entity.last_updated.Hour] += double.Parse(entity.state, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture) / 1000;
                 if (entity.last_updated.TimeOfDay != TimeSpan.Zero)
-                    data.Add(entity.last_updated,
-                        double.Parse(entity.state, NumberStyles.Float | NumberStyles.AllowThousands,
-                            CultureInfo.InvariantCulture) / 1000);
+                {
+                    double result;
+
+                    if (double.TryParse(entity.state, out result))
+                        data.Add(entity.last_updated, result);
+                }
 
             LiveChartsGenerator liveChartsGenerator = new();
             return new FileInfo(
@@ -319,25 +324,25 @@ public class HomeAssistantPlugin
             return null;
         }
     }
-
-
+    
     private async Task<List<HomeAssistantEntity>> GetPowerHistoryEntities()
     {
         DateTime startTime = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0, Calendar.CurrentEra);
 
         string powerHistoryUrl =
-            $"history/period/{startTime:yyyy-MM-ddTHH:mm:ss+00:00}?filter_entity_id=sensor.growatt_output_watt_actual";
+            $"history/period/{startTime:yyyy-MM-ddTHH:mm:ss+00:00}?filter_entity_id=sensor.growatt_output_kilowatt_actual";
         // powerHistoryUrl = $"history/period?filter_entity_id=sensor.my_plant_total_output_power";
+        
         using (HttpClient client = new())
         {
             client.BaseAddress = new Uri(_apiUrl);
             client.DefaultRequestHeaders.Add("User-Agent", "Anything");
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            
+
             List<List<HomeAssistantEntity>> res =
                 await client.GetFromJsonAsync<List<List<HomeAssistantEntity>>>(powerHistoryUrl, _serializerOptions);
-
+            
             return res.FirstOrDefault();
         }
     }
