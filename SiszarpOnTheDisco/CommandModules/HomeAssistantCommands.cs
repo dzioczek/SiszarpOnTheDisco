@@ -137,6 +137,7 @@ public class HomeAssistantCommands : ModuleBase<SocketCommandContext>
     [Command("roller", false, RunMode = RunMode.Async)]
     public async Task SetOfficeBlindShade([Remainder] string position)
     {
+        
         if (Context.User.Username == "mpDzioczek")
         {
             if (int.TryParse(position, CultureInfo.InvariantCulture, out int newPosition))
@@ -147,6 +148,11 @@ public class HomeAssistantCommands : ModuleBase<SocketCommandContext>
             {
                 await ReplyAsync(("Nie rozumiem co Ty do mnie rozmawiasz..."));
             }
+        }
+        else
+        {
+            string user = Context.User.Username;
+            await ReplyAsync($"Oj {user}, {user}..."); 
         }
     }
 }
