@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using Discord;
@@ -132,5 +133,20 @@ public class HomeAssistantCommands : ModuleBase<SocketCommandContext>
             await ReplyAsync(_homeAssistant.ChangeOfficeBlindShade(false).Result);
         }
     }
-    
+
+    [Command("roller", false, RunMode = RunMode.Async)]
+    public async Task SetOfficeBlindShade([Remainder] string position)
+    {
+        if (Context.User.Username == "mpDzioczek")
+        {
+            if (int.TryParse(position, CultureInfo.InvariantCulture, out int newPosition))
+            {
+                await ReplyAsync(_homeAssistant.SetOfficeBlindShade(newPosition).Result);
+            }
+            else
+            {
+                await ReplyAsync(("Nie rozumiem co Ty do mnie rozmawiasz..."));
+            }
+        }
+    }
 }

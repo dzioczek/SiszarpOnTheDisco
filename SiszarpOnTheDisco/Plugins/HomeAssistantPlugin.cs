@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Serilog;
 using SiszarpOnTheDisco.Models.HomeAssistant;
+using SkiaSharp;
 
 namespace SiszarpOnTheDisco.Plugins;
 
@@ -244,9 +245,15 @@ public class HomeAssistantPlugin
 
     public async Task<string> SetOfficeBlindShade()
     {
-        return await SetBlindPosition(new CoverPositionServiceData()
-            { EntityId = "cover.blind_office", Position = 50 });
+        return await SetOfficeBlindShade(50); 
     }
+
+    public async Task<string> SetOfficeBlindShade(int position)
+    {
+        return await SetBlindPosition(new CoverPositionServiceData()
+            { EntityId = "cover.blind_office", Position = position });
+    }
+    
 
     public async Task<string> ChangeOfficeBlindShade(bool more)
     {
