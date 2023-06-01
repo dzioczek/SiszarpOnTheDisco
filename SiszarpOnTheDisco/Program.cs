@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Discord.Interactions;
+using Discord.Net;
 using Discord.WebSocket;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using Serilog;
 using SiszarpOnTheDisco.CommandModules;
 using SiszarpOnTheDisco.Models;
@@ -18,6 +22,9 @@ internal class Program
     private CommandHandler _commandHandler;
     private CommandService _commands;
     private IServiceProvider _services;
+    private ulong _guildId = 898113384996802580;
+
+    private InteractionService _interactionService;
 
     private static void Main(string[] args)
     {
@@ -27,21 +34,40 @@ internal class Program
     public async Task MainAsync()
     {
         Console.CancelKeyPress += Quit;
-        
-        _client = new DiscordSocketClient();
+
+        var config = new DiscordSocketConfig()
+        {
+            GatewayIntents = GatewayIntents.All,
+        };
+
+        _client = new DiscordSocketClient(config);
         _client.Log += Log;
+
+        _interactionService = new InteractionService(_client.Rest);
         
-        string token = Environment.GetEnvironmentVariable("DISCORD_TOKEN"); 
+        _client.Ready += ClientReady;
+
+
+        string token = Environment.GetEnvironmentVariable("DISCORD_TOKEN");
 
         _commands = new CommandService();
         _commands.Log += Log;
         _services = ConfigureServices();
-        
+        await _interactionService.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
         _commandHandler = new CommandHandler(_client, _commands, _services);
         await _commandHandler.InstallCommandAsync();
 
+        _client.InteractionCreated += async (x) =>
+        {
+            var ctx = new SocketInteractionContext(_client, x);
+            await _interactionService.ExecuteCommandAsync(ctx, _services);
+        };
+
+
         await _client.LoginAsync(TokenType.Bot, token);
         await _client.StartAsync();
+
+
 
         await Task.Delay(-1);
     }
@@ -67,6 +93,7 @@ internal class Program
             .AddSingleton<AllergenCommands>()
             .AddSingleton<LawnPlugin>()
             .AddSingleton<LawnCommands>()
+            .AddTransient<TodoCommands>()
             .AddDbContext<ApplicationDbContext>(
                 options => options.UseNpgsql(GetConnectionString()));
 
@@ -97,4 +124,20 @@ internal class Program
     {
         return $"Server={Environment.GetEnvironmentVariable("PG_HOST")};Port={Environment.GetEnvironmentVariable("PG_PORT")};Database={Environment.GetEnvironmentVariable("PG_DATABASE")};Username={Environment.GetEnvironmentVariable("PG_USERNAME")};Password={Environment.GetEnvironmentVariable("PG_PASSWORD")}";
     }
+
+    public async Task ClientReady()
+    {
+        try
+        {
+            
+            await _interactionService.RegisterCommandsToGuildAsync(_guildId);
+        }
+        catch (HttpException ex)
+        {
+            var json = JsonConvert.SerializeObject(ex, Formatting.Indented);
+            Console.WriteLine(json);
+        }
+
+    }
+
 }
