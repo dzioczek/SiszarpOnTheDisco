@@ -245,7 +245,7 @@ public class HomeAssistantPlugin
 
     public async Task<string> SetOfficeBlindShade()
     {
-        return await SetOfficeBlindShade(50); 
+        return await SetOfficeBlindShade(20); 
     }
 
     public async Task<string> SetOfficeBlindShade(int position)
