@@ -1,10 +1,11 @@
-using System.Threading.Tasks;
-using Discord.Commands;
+using Discord;
+using Discord.Interactions;
 using SiszarpOnTheDisco.Plugins;
+using System.Threading.Tasks;
 
 namespace SiszarpOnTheDisco.CommandModules;
 
-public class LawnCommands : ModuleBase<SocketCommandContext>
+public class LawnCommands : InteractionModuleBase
 {
     private readonly LawnPlugin _lawnPlugin;
 
@@ -13,59 +14,35 @@ public class LawnCommands : ModuleBase<SocketCommandContext>
         _lawnPlugin = lawnPlugin;
     }
 
-    [Command("skoszone", RunMode = RunMode.Async)]
-    [Summary("Zapisuje koszenie.")]
-    public async Task LawnMowed()
+    [SlashCommand("skoszone", "Zapisuje koszenie i komentarz.", runMode: RunMode.Async)]
+    public async Task LawnMowed([Summary("komentarz")] string comment = "")
     {
-        await ReplyAsync(_lawnPlugin.NewMowingEvent(Context.User.Username, string.Empty).Result);
+        await RespondAsync(_lawnPlugin.NewMowingEvent(Context.User.Username, comment).Result);
     }
 
-    [Command("skoszone", RunMode = RunMode.Async)]
-    [Summary("Zapisuje koszenie i komentarz.")]
-    public async Task LawnMowed([Remainder] [Summary("komentarz")] string comment)
+    [SlashCommand("nawiezione", "Zapisuje nawożenie i komentarz", runMode: RunMode.Async)]
+    public async Task LawnFertilized([Summary("komentarz")] string comment = "")
     {
-        await ReplyAsync(_lawnPlugin.NewMowingEvent(Context.User.Username, comment).Result);
+        await RespondAsync(_lawnPlugin.NewFertilizingEvent(Context.User.Username, comment).Result);
     }
 
-    [Command("nawiezione", RunMode = RunMode.Async)]
-    [Summary("Zapisuje nawożenie")]
-    public async Task LawnFertilized()
+    [SlashCommand("zgrabione", "Zapisuje grabienie i komentarz", runMode: RunMode.Async)]
+    public async Task LawnRaked([Summary("komentarz")] string comment = "")
     {
-        await ReplyAsync(_lawnPlugin.NewFertilizingEvent(Context.User.Username, string.Empty).Result);
+        await RespondAsync(_lawnPlugin.NewRakingEvent(Context.User.Username, comment).Result);
     }
 
-    [Command("nawiezione", RunMode = RunMode.Async)]
-    [Summary("Zapisuje nawożenie i komentarz")]
-    public async Task LawnFertilized([Remainder] [Summary("komentarz")] string comment)
+    [SlashCommand("trawnik", "Pobiera status trawnika dla danego ogrodnika", runMode: RunMode.Async)]
+    public async Task LawnStatus([Summary("ogrodnik", "Nazwa ogrodnika.")] IUser gardner = null)
     {
-        await ReplyAsync(_lawnPlugin.NewFertilizingEvent(Context.User.Username, comment).Result);
-    }
+        if (gardner == null) gardner = Context.User;
 
-    [Command("zgrabione", RunMode = RunMode.Async)]
-    [Summary("Zapisuje grabienie")]
-    public async Task LawnRaked()
-    {
-        await ReplyAsync(_lawnPlugin.NewRakingEvent(Context.User.Username, string.Empty).Result); 
-    }
-
-    [Command("zgrabione", RunMode = RunMode.Async)]
-    [Summary("Zapisuje grabienie i komentarz")]
-    public async Task LawnRaked([Remainder] [Summary("komentarz")] string comment)
-    {
-        await ReplyAsync(_lawnPlugin.NewRakingEvent(Context.User.Username, comment).Result);
-    }
-
-    [Command("trawnik", RunMode = RunMode.Async)]
-    [Summary("Pobiera status trawnika.")]
-    public async Task LawnStatus()
-    {
-        await ReplyAsync(_lawnPlugin.GetLawnStatus(Context.User.Username));
-    }
-
-    [Command("trawnik", RunMode = RunMode.Async)]
-    [Summary("Pobiera status trawnika dla danego ogrodnika")]
-    public async Task LawnStatus([Remainder] [Summary("nick ogrodnika")] string gardner)
-    {
-        await ReplyAsync(_lawnPlugin.GetLawnStatus(gardner)); 
+        EmbedBuilder embedBuilder = new()
+        {
+            Title = $"Status trawnika u {gardner.Username}",
+            Description = _lawnPlugin.GetLawnStatus(gardner.Username),
+            Color = Color.Green
+        }; 
+        await RespondAsync(embed: embedBuilder.Build());
     }
 }
