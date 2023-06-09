@@ -27,32 +27,5 @@ public class TodoCommands : InteractionModuleBase
         await RespondAsync(input);
 
     }
-
-    [SlashCommand("trawnik", "Pobiera status trawnika dla danego ogrodnika", runMode: RunMode.Async)]
-    public async Task LawnStatus([Summary("ogrodnik", "Nazwa ogrodnika.")] IUser gardner)
-    {
-        await RespondAsync(_lawnPlugin.GetLawnStatus(gardner.Username));
-    }
-
-
-    [SlashCommand("dajseta", "Losuje seta z bazy", runMode: RunMode.Async)]
-    public async Task GetRandomLink()
-    {
-        StringBuilder stringBuilder = new();
-        // stringBuilder.AppendLine($"Message time: {Context.c.Timestamp.ToString()}");
-
-        //stringBuilder.AppendLine($"before getting link: {DateTimeOffset.Now.ToString()}");
-        MusicLink musicLink = _musicLinksPlugin.GetRandomLink();
-        //stringBuilder.AppendLine($"after getting link: {DateTimeOffset.Now.ToString()}");
-        stringBuilder.AppendLine(musicLink.Stats);
-        EmbedBuilder builder = new()
-        {
-            Title = musicLink.url,
-            Url = musicLink.url,
-            Description = stringBuilder.ToString(),
-            Color = Color.Red
-        };
-        await RespondAsync(embed: builder.Build());
-    }
 }
 

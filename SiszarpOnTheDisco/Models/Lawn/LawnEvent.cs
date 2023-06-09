@@ -13,8 +13,8 @@ public class LawnEvent : IComparable
 
     public override string ToString()
     {
-        return $"{EventType.Name} - {EventDate:dd/MM/yyy}: {Comment}";
-    }
+        return $"{EventType.Name} - {EventDate:dd/MM/yyy} ({(DateTime.Today - EventDate.ToDateTime(TimeOnly.MinValue)).TotalDays} dni temu) {Comment}";
+    }   
 
     public int CompareTo(object obj)
     {

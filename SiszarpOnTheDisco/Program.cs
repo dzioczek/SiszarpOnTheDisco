@@ -22,7 +22,7 @@ internal class Program
     private CommandHandler _commandHandler;
     private CommandService _commands;
     private IServiceProvider _services;
-    private ulong _guildId = 898113384996802580;
+    private ulong _guildId;
 
     private InteractionService _interactionService;
 
@@ -44,10 +44,10 @@ internal class Program
         _client.Log += Log;
 
         _interactionService = new InteractionService(_client.Rest);
-        
+
         _client.Ready += ClientReady;
 
-
+        _guildId = ulong.Parse(Environment.GetEnvironmentVariable("GUILD_ID"));
         string token = Environment.GetEnvironmentVariable("DISCORD_TOKEN");
 
         _commands = new CommandService();
@@ -87,12 +87,10 @@ internal class Program
             .AddSingleton<HomeAssistantPlugin>()
             .AddSingleton<HomeAssistantCommands>()
             .AddSingleton<MusicLinksPlugin>()
-            .AddSingleton<MusicCommands>()
+            .AddTransient<MusicCommands>()
             .AddSingleton<GeneralCommands>()
-            .AddSingleton<AllergensPlugin>()
-            .AddSingleton<AllergenCommands>()
             .AddSingleton<LawnPlugin>()
-            .AddSingleton<LawnCommands>()
+            .AddTransient<LawnCommands>()
             .AddTransient<TodoCommands>()
             .AddDbContext<ApplicationDbContext>(
                 options => options.UseNpgsql(GetConnectionString()));
@@ -129,7 +127,6 @@ internal class Program
     {
         try
         {
-            
             await _interactionService.RegisterCommandsToGuildAsync(_guildId);
         }
         catch (HttpException ex)
