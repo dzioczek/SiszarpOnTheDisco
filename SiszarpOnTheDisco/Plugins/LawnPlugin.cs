@@ -37,6 +37,13 @@ public class LawnPlugin
         bool result = await CreateLawnEvent(user, comment, LawnEventTypes.Raking);
         return result ? "Zapisane!" : "Coś poszło nie tak :(";
     }
+
+    public async Task<string> NewEdgingEvent(string user, string comment)
+    {
+        bool result = await CreateLawnEvent(user, comment, LawnEventTypes.Edging);
+        return result ? "Zapisane!" : "Coś poszło nie tak :(";
+    }
+
     private async Task<bool> CreateLawnEvent(string user, string comment, LawnEventTypes eventType)
     {
         try

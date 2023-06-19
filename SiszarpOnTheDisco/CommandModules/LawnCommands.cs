@@ -32,6 +32,12 @@ public class LawnCommands : InteractionModuleBase
         await RespondAsync(_lawnPlugin.NewRakingEvent(Context.User.Username, comment).Result);
     }
 
+    [SlashCommand("wykrawedziowane", "Zapisuje krawędziowanie i komentarz.", runMode: RunMode.Async)]
+    public async Task LawnEdged([Summary("komentarz")] string comment = "")
+    {
+        await RespondAsync(_lawnPlugin.NewEdgingEvent(Context.User.Username, comment).Result);
+    }
+
     [SlashCommand("trawnik", "Pobiera status trawnika dla danego ogrodnika", runMode: RunMode.Async)]
     public async Task LawnStatus([Summary("ogrodnik", "Nazwa ogrodnika.")] IUser gardner = null)
     {
