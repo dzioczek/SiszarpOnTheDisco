@@ -69,12 +69,12 @@ public class LawnPlugin
 
     public string GetLawnStatus(string user)
     {
-        List<LawnEvent> lawnEvents = new()
+        List<LawnEvent> lawnEvents = new();
+
+        foreach (LawnEventTypes type in LawnEventTypes.List)
         {
-            GetLatestEvent(user, LawnEventTypes.Mowing),
-            GetLatestEvent(user, LawnEventTypes.Fertilizing),
-            GetLatestEvent(user, LawnEventTypes.Raking)
-        };
+            lawnEvents.Add(GetLatestEvent(user, type)); 
+        }
 
         if (lawnEvents.All(x => x is null)) return "Nic nie znalazłem :(";
         
