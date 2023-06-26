@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Discord;
+using Discord.Commands;
+using Sprocket.Text.Ascii;
+using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Discord;
-using Discord.Commands;
-using Sprocket.Text.Ascii;
 
 namespace SiszarpOnTheDisco.CommandModules;
 
@@ -36,7 +36,7 @@ public class GeneralCommands : ModuleBase<SocketCommandContext>
             Title = "help",
             Description = stringBuilder.ToString(),
             Color = Color.Blue
-        }; 
+        };
 
         await ReplyAsync(embed: builder.Build());
     }
@@ -59,7 +59,7 @@ public class GeneralCommands : ModuleBase<SocketCommandContext>
 
         foreach (CommandInfo command in moduleInfo.Commands)
         {
-            StringBuilder paramStringBuilder = new(); 
+            StringBuilder paramStringBuilder = new();
             if (command.Parameters.Count > 0)
             {
                 foreach (ParameterInfo commandParameter in command.Parameters)
@@ -95,7 +95,7 @@ public class GeneralCommands : ModuleBase<SocketCommandContext>
             CellWidth = 5,
             RenderWeekRowSeparators = false
         };
-        
+
         await ReplyAsync($"```{c.Render(DateTime.Now)}```");
     }
 }

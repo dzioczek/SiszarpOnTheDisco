@@ -92,6 +92,7 @@ internal class Program
             .AddSingleton<LawnPlugin>()
             .AddTransient<LawnCommands>()
             .AddTransient<TodoCommands>()
+            .AddTransient<HelpCommands>()
             .AddDbContext<ApplicationDbContext>(
                 options => options.UseNpgsql(GetConnectionString()));
 
