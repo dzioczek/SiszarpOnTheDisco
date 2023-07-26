@@ -85,9 +85,9 @@ public class MusicCommands : InteractionModuleBase
     }
 
     [SlashCommand("tagujseta", "Tagowanie seta. Podaj link i tagi rozdzielone spacjami.", runMode: RunMode.Async)]
-    public async Task TagSet([Summary("tags", "Tagi rozdzielone spacjami.")] string input)
+    public async Task TagSet([Summary("link", "Link seta do otagowania.")] string url, [Summary("tags", "Tagi rozdzielone spacjami.")] string tags)
     {
-        await RespondAsync(_musicLinksPlugin.TagSet(input));
+        await RespondAsync(_musicLinksPlugin.TagSet(url, tags));
     }
 
     [SlashCommand("usunseta", "Usuwa seta z bazy.", runMode: RunMode.Async)]

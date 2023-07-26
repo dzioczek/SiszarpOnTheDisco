@@ -17,11 +17,11 @@ public class HelpCommands : InteractionModuleBase
     }
 
     [SlashCommand("pomocy", "Get help.", runMode: RunMode.Async)]
-    public async Task GetHelp([Summary("nazwa", "Nazwa modułu.")]string moduleName = "")
+    public async Task GetHelp([Summary("nazwa", "Nazwa modułu.")] string moduleName = "")
     {
+        StringBuilder sb = new StringBuilder();
         if (string.IsNullOrEmpty(moduleName))
         {
-            StringBuilder sb = new StringBuilder();
             sb.AppendLine("Displaying list of available modules.");
             sb.AppendLine("To get details on certain module type: /help [moduleName]");
             sb.AppendLine(string.Empty);
@@ -30,54 +30,43 @@ public class HelpCommands : InteractionModuleBase
             {
                 sb.AppendLine($"{module.Name.Replace("Commands", string.Empty)}");
             }
-
-            EmbedBuilder builder = new()
-            {
-                Title = "help",
-                Description = sb.ToString(),
-                Color = Color.Blue
-            };
-
-            await RespondAsync(embed: builder.Build());
         }
         else
         {
             ModuleInfo moduleInfo = _interactionService.Modules
-       .FirstOrDefault(x => string.Equals(x.Name.Replace("Commands", string.Empty), moduleName,
-           StringComparison.CurrentCultureIgnoreCase));
+                                    .FirstOrDefault(x => string.Equals(x.Name.Replace("Commands", string.Empty), moduleName,
+                                        StringComparison.CurrentCultureIgnoreCase));
 
             if (moduleInfo == null)
             {
-                await ReplyAsync("Module not found.");
+                await RespondAsync("Module not found.");
                 return;
             }
 
-            StringBuilder stringBuilder = new();
-            stringBuilder.AppendLine($"List of commands for module {moduleName}");
+            sb.AppendLine($"List of commands for module {moduleName}");
 
             foreach (SlashCommandInfo command in moduleInfo.SlashCommands)
             {
-                StringBuilder paramStringBuilder = new();
+                StringBuilder paramsSb = new();
                 if (command.Parameters.Count > 0)
                 {
                     foreach (SlashCommandParameterInfo commandParameter in command.Parameters)
                     {
-                        paramStringBuilder.Append($"[{commandParameter.Name}]");
+                        paramsSb.Append($"[{commandParameter.Name}]");
                     }
                 }
-                stringBuilder.AppendLine($"{command.Name} {(paramStringBuilder.Length > 0 ? paramStringBuilder.ToString() : string.Empty)} - {command.Description}");
+                sb.AppendLine($"{command.Name} {(paramsSb.Length > 0 ? paramsSb.ToString() : string.Empty)} - {command.Description}");
             }
-
-            EmbedBuilder builder = new()
-            {
-                Title = $"help {moduleName}",
-                Description = stringBuilder.ToString(),
-                Color = Color.Blue
-            };
-
-            await RespondAsync(embed: builder.Build());
         }
-    }
 
+        EmbedBuilder builder = new()
+        {
+            Title = $"help {moduleName}",
+            Description = sb.ToString(),
+            Color = Color.Blue
+        };
+
+        await RespondAsync(embed: builder.Build());
+    }
 }
 

@@ -172,16 +172,13 @@ public class MusicLinksPlugin
         }
     }
 
-    public string TagSet(string input)
+    public string TagSet(string url, string tags)
     {
-        List<string> args = new Regex(@"\s+").Split(input).ToList();
+        List<string> args = new Regex(@"\s+").Split(tags).ToList();
 
         try
         {
-            string url = args.First().Trim();
-
             MusicLink link = _context.MusicLinks.AsQueryable().FirstOrDefault(x => x.url.Equals(url));
-            args.Remove(args.First());
 
             if (link == null) return "link nie istnieje... chyba...";
 
@@ -197,6 +194,7 @@ public class MusicLinksPlugin
         }
         catch (Exception ex)
         {
+            _logger.Error(ex.Message);
             return ex.StackTrace;
         }
     }
