@@ -22,29 +22,25 @@ public class LawnPlugin
 
     public async Task<string> NewMowingEvent(string user, string comment)
     {
-        bool result = await CreateLawnEvent(user, comment, LawnEventTypes.Mowing);
-        return result ? "Zapisane!" : "Coś poszło nie tak :(";
+        return await CreateLawnEvent(user, comment, LawnEventTypes.Mowing);
     }
 
     public async Task<string> NewFertilizingEvent(string user, string comment)
     {
-        bool result = await CreateLawnEvent(user, comment, LawnEventTypes.Fertilizing);
-        return result ? "Zapisane!" : "Coś poszło nie tak :(";
+        return await CreateLawnEvent(user, comment, LawnEventTypes.Fertilizing);
     }
 
     public async Task<string> NewRakingEvent(string user, string comment)
     {
-        bool result = await CreateLawnEvent(user, comment, LawnEventTypes.Raking);
-        return result ? "Zapisane!" : "Coś poszło nie tak :(";
+        return await CreateLawnEvent(user, comment, LawnEventTypes.Raking);
     }
 
     public async Task<string> NewEdgingEvent(string user, string comment)
     {
-        bool result = await CreateLawnEvent(user, comment, LawnEventTypes.Edging);
-        return result ? "Zapisane!" : "Coś poszło nie tak :(";
+        return await CreateLawnEvent(user, comment, LawnEventTypes.Edging);
     }
 
-    private async Task<bool> CreateLawnEvent(string user, string comment, LawnEventTypes eventType)
+    private async Task<string> CreateLawnEvent(string user, string comment, LawnEventTypes eventType)
     {
         try
         {
@@ -58,12 +54,12 @@ public class LawnPlugin
 
             _db.LawnEvents.Add(lawnEvent);
             await _db.SaveChangesAsync();
-            return true;
+            return comment != "" ? $"Zapisane: {comment}" : "Zapisane!"; 
         }
         catch (Exception e)
         {
             _logger.Error("Issue creating new LawnEvent in DB {Message}", e.Message);
-            return false;
+            return "Coś poszło nie tak :(";
         }
     }
 
