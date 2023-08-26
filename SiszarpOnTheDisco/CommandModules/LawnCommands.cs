@@ -1,5 +1,7 @@
 using Discord;
 using Discord.Interactions;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using SiszarpOnTheDisco.Models.Lawn;
 using SiszarpOnTheDisco.Plugins;
 using System.Threading.Tasks;
 
@@ -38,6 +40,12 @@ public class LawnCommands : InteractionModuleBase
         await RespondAsync(_lawnPlugin.NewEdgingEvent(Context.User.Username, comment).Result);
     }
 
+    [SlashCommand("podkoszone", "Zapisuje podkaszanie i komentarz.", runMode: RunMode.Async)]
+    public async Task LawnTrimmed([Summary("komentarz")] string comment = "")
+    {
+        await RespondAsync(_lawnPlugin.CreateLawnEvent(Context.User.Username, comment, LawnEventTypes.Trimming).Result);
+    }
+
     [SlashCommand("trawnik", "Pobiera status trawnika dla danego ogrodnika", runMode: RunMode.Async)]
     public async Task LawnStatus([Summary("ogrodnik", "Nazwa ogrodnika.")] IUser gardner = null)
     {
@@ -48,7 +56,7 @@ public class LawnCommands : InteractionModuleBase
             Title = $"Status trawnika u {gardner.Username}",
             Description = _lawnPlugin.GetLawnStatus(gardner.Username),
             Color = Color.Green
-        }; 
+        };
         await RespondAsync(embed: embedBuilder.Build());
     }
 }

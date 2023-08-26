@@ -40,7 +40,7 @@ public class LawnPlugin
         return await CreateLawnEvent(user, comment, LawnEventTypes.Edging);
     }
 
-    private async Task<string> CreateLawnEvent(string user, string comment, LawnEventTypes eventType)
+    public async Task<string> CreateLawnEvent(string user, string comment, LawnEventTypes eventType)
     {
         try
         {
