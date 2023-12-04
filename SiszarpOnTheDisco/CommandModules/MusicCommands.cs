@@ -95,4 +95,16 @@ public class MusicCommands : InteractionModuleBase
     {
         await RespondAsync(_musicLinksPlugin.DeleteSet(link).Result);
     }
+
+    [SlashCommand("dajamber", "też chyba wiadomo...")]
+    public async Task GetAmber()
+    {
+        EmbedBuilder builder = new()
+        {
+            Description = _musicLinksPlugin.SearchSet("amber"),
+            Color = Color.Red
+        };
+
+        await RespondAsync(embed: builder.Build());
+    }
 }
