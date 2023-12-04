@@ -96,7 +96,7 @@ public class MusicCommands : InteractionModuleBase
         await RespondAsync(_musicLinksPlugin.DeleteSet(link).Result);
     }
 
-    [SlashCommand("dajamber", "też chyba wiadomo...")]
+    [SlashCommand("dajAmber", "też chyba wiadomo...")]
     public async Task GetAmber()
     {
         EmbedBuilder builder = new()
