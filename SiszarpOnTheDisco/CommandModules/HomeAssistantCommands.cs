@@ -120,7 +120,7 @@ public class HomeAssistantCommands : ModuleBase<SocketCommandContext>
     [Command("wiecej", RunMode = RunMode.Async)]
     public async Task MoreOfficeShade()
     {
-        if (Context.User.Username == "mpDzioczek")
+        if (Context.User.Username == "mpdzioczek")
         {
             await ReplyAsync(_homeAssistant.ChangeOfficeBlindShade(true).Result);
         } 
@@ -128,7 +128,7 @@ public class HomeAssistantCommands : ModuleBase<SocketCommandContext>
     [Command("mniej", RunMode = RunMode.Async)]
     public async Task LessOfficeShade()
     {
-        if (Context.User.Username == "mpDzioczek")
+        if (Context.User.Username == "mpdzioczek")
         {
             await ReplyAsync(_homeAssistant.ChangeOfficeBlindShade(false).Result);
         }
@@ -137,7 +137,7 @@ public class HomeAssistantCommands : ModuleBase<SocketCommandContext>
     [Command("roller", false, RunMode = RunMode.Async)]
     public async Task SetOfficeBlindShade([Remainder] string position)
     {
-        if (Context.User.Username == "mpDzioczek")
+        if (Context.User.Username == "mpdzioczek")
         {
             if (int.TryParse(position, CultureInfo.InvariantCulture, out int newPosition))
             {

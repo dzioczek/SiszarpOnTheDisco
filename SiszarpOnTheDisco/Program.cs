@@ -90,6 +90,7 @@ internal class Program
             .AddTransient<MusicCommands>()
             .AddSingleton<GeneralCommands>()
             .AddSingleton<LawnPlugin>()
+            .AddSingleton<ChallengeCommands>()
             .AddTransient<LawnCommands>()
             .AddTransient<TodoCommands>()
             .AddTransient<HelpCommands>()
