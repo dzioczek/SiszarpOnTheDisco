@@ -5,11 +5,11 @@ services:
       - MODE=json-rpc
       - SIGNAL_CLI_CONFIG_DIR=/home/.local/share/signal-cli/
     ports:
-      - 8080:8080
+      - 8999:8080
     volumes:
       - "./signal-cli-config:/home/.local/share/signal-cli"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://signalapi:8080/v1/health"]
+      test: ["CMD", "curl", "-f", "http://signalapi:8999/v1/health"]
       interval: 10s
       retries: 5
       start_period: 20s
@@ -17,7 +17,7 @@ services:
   siszarponthedisco:
     env_file: .env
     environment:
-      - SIGNAL_API_ADDRESS=signalapi:8080
+      - SIGNAL_API_ADDRESS=signalapi:8999
     image: dzioczek/siszarponthedisco:latest
     build:
       context: .
