@@ -1,6 +1,5 @@
 services:
   signalapi:
-    container_name: signalApi
     image: bbernhard/signal-cli-rest-api:latest
     environment:
       - MODE=json-rpc
@@ -10,7 +9,7 @@ services:
     volumes:
       - "./signal-cli-config:/home/.local/share/signal-cli"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://signalapi:8999/v1/health"]
+      test: ["CMD", "curl", "-f", "http://signalapi:8080/v1/health"]
       interval: 10s
       retries: 5
       start_period: 20s
@@ -19,7 +18,7 @@ services:
     container_name: siszarp
     env_file: .env
     environment:
-      - SIGNAL_API_ADDRESS=signalapi:8999
+      - SIGNAL_API_ADDRESS=signalapi:8080
     image: dzioczek/siszarponthedisco:latest
     build:
       context: .
