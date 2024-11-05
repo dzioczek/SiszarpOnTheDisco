@@ -1,8 +1,23 @@
-version: '3.4'
-
 services:
+  signalapi:
+    image: bbernhard/signal-cli-rest-api:latest
+    environment:
+      - MODE=json-rpc
+      - SIGNAL_CLI_CONFIG_DIR=/home/.local/share/signal-cli/
+    ports:
+      - 8080:8080
+    volumes:
+      - "./signal-cli-config:/home/.local/share/signal-cli"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://signalapi:8080/v1/health"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
   siszarponthedisco:
     env_file: .env
+    environment:
+      - SIGNAL_API_ADDRESS=signalapi:8080
     image: dzioczek/siszarponthedisco:latest
     build:
       context: .
@@ -10,6 +25,7 @@ services:
     tty: true
     stdin_open: true
     restart: unless-stopped
-    
-      
-      
+    depends_on:
+      signalapi:
+        condition: service_healthy
+        restart: true

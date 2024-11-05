@@ -13,6 +13,8 @@ using Serilog;
 using SiszarpOnTheDisco.CommandModules;
 using SiszarpOnTheDisco.Models;
 using SiszarpOnTheDisco.Plugins;
+using SiszarpOnTheDisco.Signal;
+
 
 namespace SiszarpOnTheDisco;
 
@@ -67,7 +69,8 @@ internal class Program
         await _client.LoginAsync(TokenType.Bot, token);
         await _client.StartAsync();
 
-
+        SignalWebsocketClient signalClient = (SignalWebsocketClient)_services.GetService(typeof(SignalWebsocketClient));
+        signalClient?.RunClient();
 
         await Task.Delay(-1);
     }
@@ -94,6 +97,8 @@ internal class Program
             .AddTransient<LawnCommands>()
             .AddTransient<TodoCommands>()
             .AddTransient<HelpCommands>()
+            .AddSingleton<SignalService>()
+            .AddSingleton<SignalWebsocketClient>()
             .AddDbContext<ApplicationDbContext>(
                 options => options.UseNpgsql(GetConnectionString()));
 
@@ -107,7 +112,7 @@ internal class Program
     private static ILogger GetLogger()
     {
         return new LoggerConfiguration()
-            .MinimumLevel.Information()
+            .MinimumLevel.Debug()
             .WriteTo.Console()
             //.WriteTo.File("log.txt", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
             .CreateLogger();
@@ -130,6 +135,7 @@ internal class Program
         try
         {
             await _interactionService.RegisterCommandsToGuildAsync(_guildId);
+            
         }
         catch (HttpException ex)
         {

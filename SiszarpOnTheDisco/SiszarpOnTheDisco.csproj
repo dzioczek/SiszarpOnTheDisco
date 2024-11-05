@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <StartupObject>SiszarpOnTheDisco.Program</StartupObject>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-        <LangVersion>11</LangVersion>
+        <LangVersion>12</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <None Remove="Discord.Net" />
@@ -46,6 +46,7 @@
         <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
         <PackageReference Include="Sprocket.Text.Ascii.Calendar" Version="1.0.0" />
+        <PackageReference Include="Websocket.Client" Version="5.1.2" />
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Migrations\" />
