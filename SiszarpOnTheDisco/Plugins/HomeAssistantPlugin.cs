@@ -21,6 +21,7 @@ public class HomeAssistantPlugin
 {
     private readonly string _apiUrl;
     private readonly string _apiKey;
+    private readonly string _picsBasePath;
     private readonly ILogger _logger;
     private readonly JsonSerializerOptions _serializerOptions;
 
@@ -29,6 +30,7 @@ public class HomeAssistantPlugin
         _logger = logger;
         _apiKey = Environment.GetEnvironmentVariable("HA_API_KEY");
         _apiUrl = Environment.GetEnvironmentVariable("HA_API_BASE_URL");
+        _picsBasePath = Environment.GetEnvironmentVariable("PICTURES_DIRECTORY");
 
         _serializerOptions = new()
         {
@@ -215,7 +217,8 @@ public class HomeAssistantPlugin
     private string CreatePictureLocalPath()
     {
         // FileInfo executingProgram = new FileInfo(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
-        DirectoryInfo directoryInfo = new(Path.Combine("/", "pics", "cameras"));
+
+        DirectoryInfo directoryInfo = new(Path.Combine(_picsBasePath, "cameras"));
 
         if (!directoryInfo.Exists) directoryInfo.Create();
 

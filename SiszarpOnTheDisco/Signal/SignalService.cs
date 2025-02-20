@@ -50,7 +50,7 @@ public class SignalService
                     using HttpClient httpClient = new HttpClient();
                     httpClient.BaseAddress = new Uri($"http://{ApiAddress}/");
 
-                    string replyTo = message.Envelope.SourceNumber;
+                    string replyTo = message.Envelope.Source;
 
                     if (message.Envelope.DataMessage.GroupInfo != null)
                     {
