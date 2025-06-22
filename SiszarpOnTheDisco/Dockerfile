@@ -2,17 +2,19 @@ FROM mcr.microsoft.com/dotnet/runtime:9.0 AS base
 
 RUN apt-get update && apt-get install fontconfig --no-install-recommends --yes
 
-RUN groupadd -r pptruser && \
-    useradd -r -g pptruser -G audio,video pptruser && \
+RUN groupadd -g 1000 pptruser && \
+    useradd -u 1000 -g pptruser -G audio,video pptruser && \
     mkdir -p /home/pptruser  && \
     mkdir -p /home/pptruser/Downloads && \
     mkdir -p /app && \
     mkdir -p /pics  && \
     mkdir -p /signal && \
+    mkdir -p /signal/config && \
     chown -R pptruser:pptruser /home/pptruser && \
     chown -R pptruser:pptruser /app && \
     chown -R pptruser:pptruser /pics && \
-    chown -R pptruser:pptruser /signal
+    chown -R pptruser:pptruser /signal && \
+    chown -R pptruser:pptruser /signal/config
 
 USER pptruser
 WORKDIR /app
