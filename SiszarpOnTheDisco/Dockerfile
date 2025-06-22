@@ -27,6 +27,7 @@ FROM build AS publish
 RUN dotnet publish "SiszarpOnTheDisco.csproj" -c Release -o /app/publish
 
 FROM base AS final
+USER pptruser
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SiszarpOnTheDisco.dll"]
