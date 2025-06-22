@@ -49,26 +49,34 @@ public class MusicLinksPlugin
 
     public MusicLink GetRandomLink()
     {
-        List<MusicLink> linkList = _context.MusicLinks.ToList();
-        if (linkList.Count == 0) return null;
-
-        int i = new Random().Next(1, linkList.Count);
-
-        MusicLink musicLink = linkList.FirstOrDefault(x => x.ID.Equals(i));
-
-        if (musicLink != null)
+        try
         {
-            musicLink.Apperrances += 1;
-            _context.SaveChanges();
-            _linkToVoteId = musicLink.ID;
-            _voteExpireTime = DateTime.UtcNow.AddMinutes(MinutesToVote);
-        }
-        else
-        {
-            return GetRandomLink();
-        }
+            List<MusicLink> linkList = _context.MusicLinks.ToList();
+            if (linkList.Count == 0) return null;
 
-        return musicLink;
+            int i = new Random().Next(1, linkList.Count);
+
+            MusicLink musicLink = linkList.FirstOrDefault(x => x.ID.Equals(i));
+
+            if (musicLink != null)
+            {
+                musicLink.Apperrances += 1;
+                _context.SaveChanges();
+                _linkToVoteId = musicLink.ID;
+                _voteExpireTime = DateTime.UtcNow.AddMinutes(MinutesToVote);
+            }
+            else
+            {
+                return GetRandomLink();
+            }
+
+            return musicLink;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     private Regex SearchRegex(string searchTerm)

@@ -76,8 +76,8 @@ internal class Program
         await _client.LoginAsync(TokenType.Bot, token);
         await _client.StartAsync();
 
-        SignalCliWrapper signalClient = _services.GetRequiredService<SignalCliWrapper>();
-        ThreadPool.QueueUserWorkItem(signalClient.StartAsync, cancellationToken);
+        // SignalCliWrapper signalClient = _services.GetRequiredService<SignalCliWrapper>();
+        // ThreadPool.QueueUserWorkItem(signalClient.StartAsync, cancellationToken);
 
         await Task.Delay(-1);
     }

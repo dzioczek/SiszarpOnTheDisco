@@ -12,8 +12,8 @@ public class MusicLink
     public int Meh { get; set; }
     public int Apperrances { get; set; }
     public string Title { get; set; }
-    public string Tags { get; set; }
-    public string YoutubeChannel { get; set; }
+    public string? Tags { get; set; }
+    public string? YoutubeChannel { get; set; }
 
     public string Stats => string.Format($"[yay: {Yay}, meh: {Meh}, votes: {Votes}, appearances: {Apperrances}]");
 

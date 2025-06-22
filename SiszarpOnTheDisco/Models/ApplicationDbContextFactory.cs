@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
@@ -9,14 +10,17 @@ internal class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applica
 {
     public ApplicationDbContext CreateDbContext(string[] args)
     {
-        IConfiguration configuration = new ConfigurationBuilder()
-            .AddJsonFile("appSettings.json", false, true)
-            .Build();
 
-        string connectionString = configuration.GetConnectionString("DefaultConnection");
         DbContextOptionsBuilder<ApplicationDbContext> optionBuilder = new();
 
-        optionBuilder.UseNpgsql(connectionString);
+        optionBuilder.UseNpgsql(GetConnectionString());
         return new ApplicationDbContext(optionBuilder.Options);
     }
+
+    private static string GetConnectionString()
+    {
+        Console.WriteLine(Environment.GetEnvironmentVariable("$PG_HOST"));
+        return $"Server={Environment.GetEnvironmentVariable("PG_HOST")};Port={Environment.GetEnvironmentVariable("PG_PORT")};Database={Environment.GetEnvironmentVariable("PG_DATABASE")};Username={Environment.GetEnvironmentVariable("PG_USERNAME")};Password={Environment.GetEnvironmentVariable("PG_PASSWORD")}";
+    }
+
 }

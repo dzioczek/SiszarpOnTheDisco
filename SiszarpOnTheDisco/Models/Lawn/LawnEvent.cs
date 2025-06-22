@@ -9,7 +9,7 @@ public class LawnEvent : IComparable
     public LawnEventTypes EventType { get; set; }
     public string Gardner { get; set; }
     public DateOnly EventDate { get; set; }
-    public  string Comment { get; set; }
+    public  string? Comment { get; set; }
 
     public override string ToString()
     {
