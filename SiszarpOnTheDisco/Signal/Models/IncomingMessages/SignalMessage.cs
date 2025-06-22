@@ -9,5 +9,4 @@ public class SignalMessage
     
     [JsonPropertyName("account")]
     public string Account { get; set; }
-    
 }

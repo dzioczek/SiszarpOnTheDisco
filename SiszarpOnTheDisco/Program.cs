@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -15,7 +17,6 @@ using SiszarpOnTheDisco.Models;
 using SiszarpOnTheDisco.Plugins;
 using SiszarpOnTheDisco.Signal;
 
-
 namespace SiszarpOnTheDisco;
 
 internal class Program
@@ -28,6 +29,8 @@ internal class Program
 
     private InteractionService _interactionService;
 
+    private CancellationTokenSource _cts;
+
     private static void Main(string[] args)
     {
         new Program().MainAsync().GetAwaiter().GetResult();
@@ -35,6 +38,10 @@ internal class Program
 
     public async Task MainAsync()
     {
+        _cts = new CancellationTokenSource();
+        CancellationToken cancellationToken = _cts.Token;
+
+        Console.CancelKeyPress += QuitSignal;
         Console.CancelKeyPress += Quit;
 
         var config = new DiscordSocketConfig()
@@ -61,7 +68,7 @@ internal class Program
 
         _client.InteractionCreated += async (x) =>
         {
-            var ctx = new SocketInteractionContext(_client, x);
+            SocketInteractionContext ctx = new(_client, x);
             await _interactionService.ExecuteCommandAsync(ctx, _services);
         };
 
@@ -69,8 +76,8 @@ internal class Program
         await _client.LoginAsync(TokenType.Bot, token);
         await _client.StartAsync();
 
-        SignalWebsocketClient signalClient = (SignalWebsocketClient)_services.GetService(typeof(SignalWebsocketClient));
-        signalClient?.RunClient();
+        SignalCliWrapper signalClient = _services.GetRequiredService<SignalCliWrapper>();
+        ThreadPool.QueueUserWorkItem(signalClient.StartAsync, cancellationToken);
 
         await Task.Delay(-1);
     }
@@ -98,7 +105,8 @@ internal class Program
             .AddTransient<TodoCommands>()
             .AddTransient<HelpCommands>()
             .AddSingleton<SignalService>()
-            .AddSingleton<SignalWebsocketClient>()
+            .AddSingleton<SignalCliWrapper>()
+            .AddSingleton<SignalUpdateService>()
             .AddDbContext<ApplicationDbContext>(
                 options => options.UseNpgsql(GetConnectionString()));
 
@@ -122,6 +130,12 @@ internal class Program
     {
         _client.StopAsync();
         Environment.Exit(0);
+    }
+
+    private void QuitSignal(object sender, ConsoleCancelEventArgs consoleCancelEventArgs)
+    {
+        SignalCliWrapper signalClient = _services.GetRequiredService<SignalCliWrapper>();
+        signalClient.CloseSignal();
     }
 
     // TODO: refactor...

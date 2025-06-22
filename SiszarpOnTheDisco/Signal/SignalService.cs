@@ -2,18 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.FileProviders;
 using Serilog;
 using SiszarpOnTheDisco.Plugins;
 using SiszarpOnTheDisco.Signal.Models.ApiModels;
 using SiszarpOnTheDisco.Signal.Models.IncomingMessages;
-using Websocket.Client;
-using static System.Text.Json.JsonSerializer;
-using Group = SiszarpOnTheDisco.Signal.Models.ApiResponses.Group;
 
 namespace SiszarpOnTheDisco.Signal;
 
@@ -31,55 +29,49 @@ public class SignalService
         _homeAssistantPlugin = homeAssistantPlugin;
         _musicLinksPlugin = musicLinksPlugin; 
     }
-    
-    public async Task ReadAndRespond(ResponseMessage responseMessage)
+
+    public async Task<string> ReadAndRespond(string data, CancellationToken cancellationToken)
     {
-        SignalMessage? message = Deserialize<SignalMessage>(responseMessage.Text!);
+
+        RpcResponse<SignalMessage, object> rpcResponse = JsonSerializer.Deserialize<RpcResponse<SignalMessage,object>>(data);
+
+        if (rpcResponse.Error is not null) _logger.Error(rpcResponse.Error.Message);
+
+        SignalMessage? message = rpcResponse?.Params;
 
         if (message?.Envelope.DataMessage != null)
         {
             string messageText = message.Envelope.DataMessage.Message!;
 
-            if (messageText.FirstOrDefault().Equals('!'))
+            if (!messageText.FirstOrDefault().Equals('!')) return string.Empty;
+
+            messageText = messageText.Remove(0, 1);
+
+            RpcResponse<Message,object> response = new()
             {
-                messageText = messageText.Remove(0, 1);
-                Message res = GetResponse(messageText); 
-                
-                if (res != null)
-                {
-                    using HttpClient httpClient = new HttpClient();
-                    httpClient.BaseAddress = new Uri($"http://{ApiAddress}/");
+                Method = "send",
+                Params = GetResponse(messageText)
+            };
 
-                    string replyTo = message.Envelope.Source;
-
-                    if (message.Envelope.DataMessage.GroupInfo != null)
-                    {
-                        string localId = message.Envelope.DataMessage.GroupInfo.GroupId!;
-                        _logger.Debug(localId);
-                        List<Group> groups = httpClient.GetFromJsonAsync<List<Group>>("v1/groups/+48451165331").Result;
-                        if (groups == null) return;
-                        Group? targetGroup = groups.FirstOrDefault(g => g.InternalId!.Equals(localId));
-                        _logger.Debug(targetGroup!.Id);
-                        replyTo = targetGroup!.Id!;
-                    }
-
-                    _logger.Debug(replyTo);
-                    
-                    if (replyTo != null)
-                    {
-                        res.Recipients = [replyTo];
-
-                        string serialized = Serialize(res);
-                        _logger.Debug(serialized);
-
-                        HttpResponseMessage response =
-                            await httpClient.PostAsync("v2/send", new StringContent(serialized));
-
-                        _logger.Debug(response.StatusCode.ToString());
-                    }
-                }
+            if (message.Envelope.DataMessage.GroupInfo != null)
+            {
+                response.Params.GroupId = message.Envelope.DataMessage.GroupInfo.GroupId;
             }
+            else
+            {
+                response.Params.Recipients = [message.Envelope.Source];
+            }
+
+            JsonSerializerOptions options = new ()
+            {
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            };
+
+            string serialized = JsonSerializer.Serialize(response, options);
+            _logger.Debug(serialized);
+            return serialized;
         }
+        return string.Empty;
     }
 
     private Message GetResponse(string commandMessage)
@@ -105,16 +97,15 @@ public class SignalService
             "yay" => _musicLinksPlugin.Vote(true).ToString(),
             "meh" => _musicLinksPlugin.Vote(false).ToString(),
             "tagujseta" => _musicLinksPlugin.TagSet(arr[1], string.Join(" ", arr.Skip(2))),
-            "cam" => _homeAssistantPlugin.GetLocalPicturePathAsync().Result.FirstOrDefault(),
+            "cam" => "Nice pics! ;]",
             _ => $"Command {command} not found..."
         };
         
         if (command == "cam")
         {
-            byte[] data = File.ReadAllBytes(m.Text);
-            m.Attachments.Add(Convert.ToBase64String(data));
+            m.Attachments = _homeAssistantPlugin.GetLocalPicturePathAsync().Result;
         }
         return m; 
     }
-    
+
 }
