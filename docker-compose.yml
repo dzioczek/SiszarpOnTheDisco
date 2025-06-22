@@ -10,4 +10,4 @@ services:
     stdin_open: true
     restart: unless-stopped
     volumes:
-      - "/home/mis/signal-cli-config:/app/signal/config"
+      - "/home/mis/signal-cli-config:/signal/config"

@@ -31,7 +31,7 @@ public class SignalCliWrapper(ILogger logger, SignalService service, SignalUpdat
             ProcessStartInfo processStartInfo = new()
             {
                 FileName =  Signal,
-                ArgumentList = { "-a", "+48451165331", "jsonRpc", "--config /app/signal/config" },
+                ArgumentList = { "-a", "+48451165331", "jsonRpc", "--config /signal/config" },
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 RedirectStandardInput = true,

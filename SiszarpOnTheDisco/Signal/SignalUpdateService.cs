@@ -17,14 +17,14 @@ namespace SiszarpOnTheDisco.Signal;
 public class SignalUpdateService
 {
     public string ClientPath { get; set; }
-    private string? AppPath { get; set; }
+    private string? SignalDirectory { get; set; }
     private readonly ILogger _logger;
 
     public SignalUpdateService(ILogger logger)
     {
         _logger = logger;
-        AppPath = Environment.GetEnvironmentVariable("APP_DIRECTORY");
-        _logger.Information("App path: {AppPath}", AppPath);
+        SignalDirectory = Environment.GetEnvironmentVariable("SIGNAL_DIRECTORY");
+        _logger.Information("App path: {SignalDirectory}", SignalDirectory);
     }
 
     public async Task CheckUpdates(CancellationToken cancellationToken)
@@ -47,7 +47,7 @@ public class SignalUpdateService
         Release? release = await response.Content.ReadFromJsonAsync<Release>(cancellationToken);
         _logger.Information("Got latest release number: {Release}", release!.Name);
 
-        DirectoryInfo signalDir = new(Path.Combine(AppPath!, "signal"));
+        DirectoryInfo signalDir = new(SignalDirectory!);
         if (!Directory.Exists(signalDir.FullName)) Directory.CreateDirectory(signalDir.FullName);
 
         ClientPath = Path.Combine(signalDir.FullName, "signal-cli");

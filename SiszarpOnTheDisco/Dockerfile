@@ -8,9 +8,11 @@ RUN groupadd -r pptruser && \
     mkdir -p /home/pptruser/Downloads && \
     mkdir -p /app && \
     mkdir -p /pics  && \
+    mkdir -p /signal && \
     chown -R pptruser:pptruser /home/pptruser && \
     chown -R pptruser:pptruser /app && \
-    chown -R pptruser:pptruser /pics
+    chown -R pptruser:pptruser /pics && \
+    chown -R pptruser:pptruser /signal
 
 USER pptruser
 WORKDIR /app
@@ -27,7 +29,6 @@ FROM build AS publish
 RUN dotnet publish "SiszarpOnTheDisco.csproj" -c Release -o /app/publish
 
 FROM base AS final
-USER pptruser
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "SiszarpOnTheDisco.dll"]
