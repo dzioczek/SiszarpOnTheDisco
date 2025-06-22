@@ -99,6 +99,7 @@ public class SignalCliWrapper(ILogger logger, SignalService service, SignalUpdat
 
     private async void ProcessExited(object sender, EventArgs e)
     {
+        logger.Error("Error {Error}", _error);
         logger.Information("Signal exit code: {S}", _signal.ExitCode.ToString());
     }
 }
