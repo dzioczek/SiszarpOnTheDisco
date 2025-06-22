@@ -1,8 +1,6 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
 FROM mcr.microsoft.com/dotnet/runtime:9.0 AS base
 
-RUN apt-get update && apt-get install fontconfig signal-cli --no-install-recommends --yes
+RUN apt-get update && apt-get install fontconfig --no-install-recommends --yes
 
 RUN groupadd -r pptruser && \
     useradd -r -g pptruser -G audio,video pptruser && \
