@@ -3,14 +3,16 @@ FROM mcr.microsoft.com/dotnet/runtime:10.0 AS base
 RUN apt-get update && apt-get install fontconfig --no-install-recommends --yes
 
 RUN groupadd -g 1000 pptruser && \
-    useradd -u 1000 -g pptruser -G audio,video pptruser && \
-    mkdir -p /home/pptruser  && \
+    useradd -u 1000 -g pptruser -G audio,video pptruser
+
+RUN    mkdir -p /home/pptruser  && \
     mkdir -p /home/pptruser/Downloads && \
     mkdir -p /app && \
     mkdir -p /pics  && \
     mkdir -p /signal && \
-    mkdir -p /signal/config && \
-    chown -R pptruser:pptruser /home/pptruser && \
+    mkdir -p /signal/config
+
+RUN chown -R pptruser:pptruser /home/pptruser && \
     chown -R pptruser:pptruser /app && \
     chown -R pptruser:pptruser /pics && \
     chown -R pptruser:pptruser /signal && \
