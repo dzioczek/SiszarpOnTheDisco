@@ -1,0 +1,4 @@
+﻿<Solution>
+  <Project Path="docker-compose.dcproj" />
+  <Project Path="SiszarpOnTheDisco\SiszarpOnTheDisco.csproj" Type="Classic C#" />
+</Solution>

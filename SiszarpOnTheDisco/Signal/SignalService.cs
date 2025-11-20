@@ -98,13 +98,18 @@ public class SignalService
             "meh" => _musicLinksPlugin.Vote(false).ToString(),
             "tagujseta" => _musicLinksPlugin.TagSet(arr[1], string.Join(" ", arr.Skip(2))),
             "cam" => "Nice pics! ;]",
+            "temp" => _homeAssistantPlugin.GetTemperatures(),
+            "power" => _homeAssistantPlugin.GetPowerStatus().Result,
             _ => $"Command {command} not found..."
         };
-        
-        if (command == "cam")
+
+        m.Attachments = command switch
         {
-            m.Attachments = _homeAssistantPlugin.GetLocalPicturePathAsync().Result;
-        }
+            "cam" => _homeAssistantPlugin.GetLocalPicturePathAsync().Result,
+            "power" => [_homeAssistantPlugin.GetPowerChart().Result.FullName],
+            _ => m.Attachments
+        };
+
         return m; 
     }
 
