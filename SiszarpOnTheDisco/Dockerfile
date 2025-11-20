@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/runtime:9.0 AS base
+FROM mcr.microsoft.com/dotnet/runtime:10.0 AS base
 
 RUN apt-get update && apt-get install fontconfig --no-install-recommends --yes
 
@@ -19,7 +19,7 @@ RUN groupadd -g 1000 pptruser && \
 USER pptruser
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY ["SiszarpOnTheDisco/SiszarpOnTheDisco.csproj", "SiszarpOnTheDisco/"]
 RUN dotnet restore "SiszarpOnTheDisco/SiszarpOnTheDisco.csproj"
