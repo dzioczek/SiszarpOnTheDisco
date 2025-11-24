@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/runtime:10.0 AS base
 RUN apt-get update && apt-get install fontconfig --no-install-recommends --yes
 
 RUN groupadd -f -g 1000 pptruser && \
-    useradd -u 1000 -g pptruser -G audio,video pptruser && \
+    useradd -o -u 1000 -g pptruser -G audio,video pptruser && \
     mkdir -p /home/pptruser  && \
     mkdir -p /home/pptruser/Downloads && \
     mkdir -p /app && \
